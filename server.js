@@ -5,16 +5,14 @@ const bodyParser = require('body-parser');
 const app = express();
 const PORT = 5000;
 
-// Middleware
+
 app.use(bodyParser.json());
 
-// MongoDB Connection
 const uri = "mongodb+srv://sunnysri:mongodbpass@cluster0.25t9p.mongodb.net/eventsManagement";
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log("MongoDB connected successfully"))
     .catch(err => console.error("MongoDB connection error:", err));
 
-// Define Schema and Model
 const eventSchema = new mongoose.Schema({
     name: String,
     date: String,
@@ -24,7 +22,6 @@ const eventSchema = new mongoose.Schema({
 
 const Event = mongoose.model('Event', eventSchema, 'events');
 
-// Create (POST) an event
 app.post('/postevents', async (req, res) => {
     try {
         const event = new Event(req.body);
@@ -35,7 +32,6 @@ app.post('/postevents', async (req, res) => {
     }
 });
 
-// Read (GET) all events
 app.get('/getevents', async (req, res) => {
     try {
         const events = await Event.find();
@@ -45,7 +41,6 @@ app.get('/getevents', async (req, res) => {
     }
 });
 
-// Update (PUT) an event by ID
 app.put('/putevents/:id', async (req, res) => {
     try {
         const updatedEvent = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -56,7 +51,6 @@ app.put('/putevents/:id', async (req, res) => {
     }
 });
 
-// Delete (DELETE) an event by ID
 app.delete('/deleteevents/:id', async (req, res) => {
     try {
         const deletedEvent = await Event.findByIdAndDelete(req.params.id);
@@ -67,7 +61,6 @@ app.delete('/deleteevents/:id', async (req, res) => {
     }
 });
 
-// Start server
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
