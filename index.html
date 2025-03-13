@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Management</title>
+    <script>
+        const API_URL = "http://localhost:5000";
+
+        async function addEvent() {
+            const event = {
+                name: document.getElementById('name').value,
+                date: document.getElementById('date').value,
+                location: document.getElementById('location').value,
+                description: document.getElementById('description').value,
+            };
+            
+            const response = await fetch(`${API_URL}/postevents`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(event)
+            });
+            
+            const result = await response.json();
+            alert(result.success ? 'Event Added Successfully!' : 'Error Adding Event');
+            getEvents();
+        }
+        
+        async function getEvents() {
+            const response = await fetch(`${API_URL}/getevents`);
+            const data = await response.json();
+            
+            const eventList = document.getElementById('eventList');
+            eventList.innerHTML = '';
+            data.events.forEach(event => {
+                const li = document.createElement('li');
+                li.innerHTML = `${event.name} - ${event.date} - ${event.location} <button onclick="deleteEvent('${event._id}')">Delete</button>`;
+                eventList.appendChild(li);
+            });
+        }
+
+        async function deleteEvent(id) {
+            const response = await fetch(`${API_URL}/deleteevents/${id}`, { method: 'DELETE' });
+            const result = await response.json();
+            alert(result.success ? 'Event Deleted Successfully!' : 'Error Deleting Event');
+            getEvents();
+        }
+    </script>
+</head>
+<body>
+    <h1>Event Management</h1>
+    
+    <h2>Add Event</h2>
+    <input type="text" id="name" placeholder="Event Name">
+    <input type="text" id="date" placeholder="Event Date">
+    <input type="text" id="location" placeholder="Event Location">
+    <input type="text" id="description" placeholder="Event Description">
+    <button onclick="addEvent()">Add Event</button>
+    
+    <h2>All Events</h2>
+    <button onclick="getEvents()">Fetch Events</button>
+    <ul id="eventList"></ul>
+</body>
+</html>
